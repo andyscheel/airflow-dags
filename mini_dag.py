@@ -57,4 +57,4 @@ with DAG(
     write_patient_data()
     load_data(clean_data)
     
-    write_patient_data >> load_data
+    
