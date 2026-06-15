@@ -3,7 +3,7 @@ from airflow import DAG
 from airflow.decorators import task
 import datetime
 
-data_path = "shared/andy-output/test.dat"
+data_path = "/mnt/shared/andy-output/test.dat"
 
 
 with DAG(
