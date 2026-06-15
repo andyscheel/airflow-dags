@@ -1,5 +1,6 @@
 import pendulum
-from airflow.decorators import dag, task
+from airflow import DAG
+from airflow.decorators import task
 
 with DAG(
     dag_id="mini-dag",
