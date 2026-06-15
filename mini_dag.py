@@ -54,7 +54,6 @@ with DAG(
     # Definiere die Task-Abhängigkeiten
     raw_data = extract_data()
     clean_data = process_data(raw_data)
-    write_patient_data()
-    load_data(clean_data)
+    load_data(clean_data, write_patient_data())
     
     
