@@ -1,6 +1,10 @@
 import pendulum
 from airflow import DAG
 from airflow.decorators import task
+import datetime
+
+data_path = "shared/andy-output/test.dat"
+
 
 with DAG(
     dag_id="mini-dag",
@@ -28,6 +32,10 @@ with DAG(
     def load_data(processed_count):
         """Speichert die verarbeiteten Daten."""
         print(f"Lade finale Datenmenge: {processed_count}")
+
+        with open(data_path, "a") as file:
+            date = datetime.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
+            file.write(f"{date}\tLade finale Datenmenge:\t{processed_count}\n")
 
     # Definiere die Task-Abhängigkeiten
     raw_data = extract_data()
