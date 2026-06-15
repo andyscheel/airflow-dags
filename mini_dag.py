@@ -45,7 +45,7 @@ with DAG(
     def write_patient_data(**context):
         hook = MySqlHook(mysql_conn_id='ddmariadb')
         records = hook.get_records(
-            "SELECT id, patient_name, date_of_birth, visit_time, severity, primary_diagnosis, secondary_diagnoses, recommended_tests, recommended_treatment, follow_up FROM triageai"
+            "SELECT id, patient_name, date_of_birth, visit_time, severity, primary_diagnosis, secondary_diagnoses, recommended_tests, recommended_treatment, follow_up FROM triage"
         )
         with open(patients_path, "w") as file:
             for row in records:
