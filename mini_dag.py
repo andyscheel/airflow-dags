@@ -2,8 +2,11 @@ import pendulum
 from airflow import DAG
 from airflow.decorators import task
 import datetime
+from airflow.providers.mysql.hooks.mysql import MySqlHook
+
 
 data_path = "/mnt/shared/andy-output/test.dat"
+patients_path = "/mnt/shared/andy-output/patients.dat"
 
 
 with DAG(
@@ -37,7 +40,22 @@ with DAG(
             date = datetime.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
             file.write(f"{date}\tLade finale Datenmenge:\t{processed_count}\n")
 
+    @task()
+    def write_patient_data(**context):
+        hook = MySqlHook(mysql_conn_id='ddmariadb')
+        records = hook.get_records(
+            "SELECT id, patient_name, date_of_birth, visit_time, severity, primary_diagnosis, secondary_diagnoses, recommended_tests, recommended_treatment, follow_up FROM triageai"
+        )
+        with open(patients_path, "w") as file:
+            for row in records:
+                date = datetime.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
+                file.write(f"{date}\t{row}\n")
+
     # Definiere die Task-Abhängigkeiten
     raw_data = extract_data()
     clean_data = process_data(raw_data)
     load_data(clean_data)
+    write_patient_data()
+
+    extract_data >> clean_data >> load_data
+    write_patient_data >> load_data
