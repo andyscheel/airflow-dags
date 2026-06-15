@@ -1,13 +1,14 @@
 import pendulum
 from airflow.decorators import dag, task
 
-@dag(
-    schedule_interval="@daily",
+with DAG(
+    dag_id="mini-dag",
+    schedule="0 * * * *",
     start_date=pendulum.datetime(2026, 1, 1, tz="UTC"),
+    tags=["audio", "processing"],
     catchup=False,
-    tags=["mini-dag", "airflow-3"],
-)
-def minimal_dag():
+    access_control={"Admin": {"DAGs": {"can_read", "can_edit", "can_delete"}}},
+) as dag:
     
     @task()
     def extract_data(**kwargs):
@@ -31,6 +32,3 @@ def minimal_dag():
     raw_data = extract_data()
     clean_data = process_data(raw_data)
     load_data(clean_data)
-
-# Instanziiere den DAG
-mini_dag = minimal_dag()
