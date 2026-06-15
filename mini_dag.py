@@ -32,7 +32,7 @@ with DAG(
         return processed_count
 
     @task()
-    def load_data(processed_count):
+    def load_data(processed_count, **kwargs):
         """Speichert die verarbeiteten Daten."""
         print(f"Lade finale Datenmenge: {processed_count}")
 
