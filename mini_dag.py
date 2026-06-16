@@ -60,7 +60,7 @@ with DAG(
         )
         
         for row in records:
-            patient = str(row[1]replace(" ", ""))
+            patient = str(row[1].replace(" ", ""))
             filename = f"{patients_path}{patient}.txt"
             data = zip(patient_array, row)
             with open(filename, "w") as file:
