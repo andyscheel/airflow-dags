@@ -6,8 +6,8 @@ from airflow.providers.mysql.hooks.mysql import MySqlHook
 
 
 data_path = "/mnt/shared/andy-output/test.dat"
-patients_path = "/mnt/shared/andy-output/patients.dat"
-
+patients_path = "/mnt/shared/andy-output/"
+patient_array = ["id","patient_name","date_of_birth", "visit_time", "severity", "primary_diagnosis", "secondary_diagnoses", "recommended_tests", "recommended_treatment", "follow_up"]
 
 with DAG(
     dag_id="mini-dag",
@@ -45,12 +45,27 @@ with DAG(
     def write_patient_data(**context):
         hook = MySqlHook(mysql_conn_id='ddmariadb')
         records = hook.get_records(
-            "SELECT id, patient_name, date_of_birth, visit_time, severity, primary_diagnosis, secondary_diagnoses, recommended_tests, recommended_treatment, follow_up FROM triage"
+            """SELECT id, 
+                      patient_name, 
+                      date_of_birth, 
+                      visit_time, 
+                      severity, 
+                      primary_diagnosis, 
+                      secondary_diagnoses, 
+                      recommended_tests, 
+                      recommended_treatment, 
+                      follow_up 
+                 FROM triage
+            """
         )
-        with open(patients_path, "w") as file:
-            for row in records:
-                date = datetime.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
-                file.write(f"{date}\t{row}\n")
+        
+        for row in records:
+            patient = str(row[1]replace(" ", "")})
+            filename = f"{patients_path}{patient}.txt"
+            data = zip(patient_array, row)
+            with open(filename, "w") as file:
+                for k,v in data:
+                    file.write(f"{k} : {v}\n")
 
     # Definiere die Task-Abhängigkeiten
     raw_data = extract_data()
